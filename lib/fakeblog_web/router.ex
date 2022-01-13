@@ -39,6 +39,15 @@ defmodule FakeblogWeb.Router do
       pipe_through :browser
 
       live_dashboard "/dashboard", metrics: FakeblogWeb.Telemetry
+
+
+      live "/posts", PostLive.Index, :index
+      live "/posts/new", PostsLive.Index, :new
+      live "/posts/:id/edit", PostsLive.Index, :edit
+
+      live "/posts/:id", PostsLive.Show, :show
+      live "/posts/:id/show/edit", PostsLive.Show, :edit
+
     end
   end
 
