@@ -18,6 +18,21 @@ defmodule FakeblogWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+
+    live "/posts", PostLive.Index, :index
+    live "/posts/new", PostLive.Index, :new
+    live "/posts/:id/edit", PostLive.Index, :edit
+
+    live "/posts/:id", PostLive.Show, :show
+    live "/posts/:id/show/edit", PostLive.Show, :edit
+
+    live "/comments", CommentLive.Index, :index
+    live "/comments/new", CommentLive.Index, :new
+    live "/comments/:id/edit", CommentLive.Index, :edit
+
+    live "/comments/:id", CommentLive.Show, :show
+    live "/comments/:id/show/edit", CommentLive.Show, :edit
+
   end
 
   # Other scopes may use custom stacks.
@@ -39,15 +54,6 @@ defmodule FakeblogWeb.Router do
       pipe_through :browser
 
       live_dashboard "/dashboard", metrics: FakeblogWeb.Telemetry
-
-
-      live "/posts", PostLive.Index, :index
-      live "/posts/new", PostsLive.Index, :new
-      live "/posts/:id/edit", PostsLive.Index, :edit
-
-      live "/posts/:id", PostsLive.Show, :show
-      live "/posts/:id/show/edit", PostsLive.Show, :edit
-
     end
   end
 

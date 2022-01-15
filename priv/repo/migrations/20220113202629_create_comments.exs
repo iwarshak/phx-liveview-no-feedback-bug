@@ -4,6 +4,7 @@ defmodule Fakeblog.Repo.Migrations.CreateComments do
   def change do
     create table(:comments) do
       add :body, :string
+      add :post_id, references(:posts)
 
       timestamps()
     end

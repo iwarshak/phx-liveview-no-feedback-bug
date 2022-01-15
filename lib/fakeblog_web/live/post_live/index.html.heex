@@ -1,6 +1,9 @@
-<h1>Listing Posts</h1>
+<h1>Error Display Problem</h1>
+<p>Step 1: Click "Add Comment"</p>
+<p>Step 2: Immediately click 'Save'</p>
+<p>Problem: Notice that the input rendered by a LiveComponent does not display the error.</p>
 
-<%= if @live_action in [:new, :edit] do %>
+<%= if @live_action in [:new] do %>
   <.modal return_to={Routes.post_index_path(@socket, :index)}>
     <.live_component
       module={FakeblogWeb.PostLive.FormComponent}
@@ -12,6 +15,84 @@
     />
   </.modal>
 <% end %>
+
+<%= if @live_action == :edit do %>
+  <.form
+    let={f}
+    for={@changeset}
+    id="post-form"
+    phx-change="validate"
+    phx-submit="save">
+
+    <%= hidden_input f, :dummy_input, phx_hook: "TriggerFakeInputHook" %>
+
+    <%# hidden_input f, :dummy_input %>
+
+    <%= label f, :title %>
+    <%= text_input f, :title, "phx-debounce": "blur" %>
+    <%= error_tag f, :title %>
+
+    <h1>Comments</h1>
+
+    <%= if true do %>
+      <%# livecomponents %>
+      <%= for {comment, idx} <- Enum.with_index(inputs_for(f, :comments)) do %>
+        <div id={"comment-row-#{idx}"}>
+          <.live_component module={FakeblogWeb.InlineCommentComponent}
+            id={"comment-#{idx}"}
+            comment={comment}
+            idx={idx}
+            post={f}
+          />
+        </div>
+      <% end %>
+    <% end %>
+
+    <%= if true do %>
+      <%# inline %>
+      <%= for {comment, idx} <- Enum.with_index(inputs_for(f, :comments)) do %>
+        <h2>inline comment <%= idx  %></h2>
+        <%= hidden_input comment, :id %>
+        <%= label comment, :body, "comment body" %>
+        <%= text_input comment, :body, "phx-debounce": "blur" %>
+        <%= error_tag comment, :body %>
+        debug: <%= inspect comment %>
+      <% end %>
+    <% end %>
+
+    <%= if false do %>
+      <%# functional components %>
+      <%= for {comment, idx} <- Enum.with_index(inputs_for(f, :comments)) do %>
+        <.func_component module={FakeblogWeb.InlineCommentComponent}
+          id={"func-comment-#{idx}"}
+          comment={comment}
+          idx={idx}
+          post={f}
+        />
+      <% end %>
+    <% end %>
+
+    <br />
+    <a href="#" phx-click="add-comment">Add a Comment</a>
+
+    <div>
+      <%= submit "Save", phx_disable_with: "Saving..." %>
+    </div>
+  </.form>
+
+
+<!--
+  <h3>Comments (<%= length(@post.comments) %>)</h3>
+  <%= for comment <- @post.comments do %>
+    <p><%= comment.body %></p>
+  <% end %>
+-->
+
+
+<% end  %>
+
+
+<%= if @live_action == :index do %>
 
 <table>
   <thead>
@@ -32,8 +113,12 @@
           <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: post.id, data: [confirm: "Are you sure?"] %></span>
         </td>
       </tr>
-    <% end %>
+    <% end %>enc
   </tbody>
 </table>
 
 <span><%= live_patch "New Post", to: Routes.post_index_path(@socket, :new) %></span>
+
+
+<% end  %>
+

@@ -23,11 +23,28 @@ import "../css/app.css"
 import "phoenix_html"
 // Establish Phoenix Socket and LiveView configuration.
 import {Socket} from "phoenix"
-import {LiveSocket} from "phoenix_live_view"
+// import {LiveSocket} from "phoenix_live_view"
+import {LiveSocket} from "./phoenix_live_view_override";
 import topbar from "../vendor/topbar"
 
+window.hooks = {}
+window.hooks.TriggerFakeInputHook = {
+  mounted() {
+    console.log('mounted hook')
+    this.handleEvent("trigger-validate", () => {
+      console.log('triggering fake input')
+      this.el.dispatchEvent(
+        new Event("input", {bubbles: true})
+      )
+    })
+  }
+}
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
+let liveSocket = new LiveSocket("/live", Socket, {
+  params: {_csrf_token: csrfToken},
+  hooks: hooks
+})
 
 // Show progress bar on live navigation and form submits
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})

@@ -1,9 +1,11 @@
 defmodule Fakeblog.Blog.Comment do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Fakeblog.Blog.Post
 
   schema "comments" do
     field :body, :string
+    field :post_id, :id
 
     timestamps()
   end
@@ -11,7 +13,7 @@ defmodule Fakeblog.Blog.Comment do
   @doc false
   def changeset(comment, attrs) do
     comment
-    |> cast(attrs, [:body])
-    |> validate_required([:body])
+    |> cast(attrs, [:body, :post_id])
+    |> validate_required([:body, :post_id])
   end
 end
